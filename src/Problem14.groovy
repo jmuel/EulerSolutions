@@ -1,47 +1,57 @@
+import groovy.transform.Field
 
-/**
- * Created with IntelliJ IDEA.
- * User: James
- * Date: 8/10/13
- * Time: 5:02 PM
- * To change this template use File | Settings | File Templates.
- */
+@Field Map<Integer, Integer> answermap = new HashMap<Integer,Integer>()
 
-
-def answermap = new HashMap<Integer,Integer>()
-
-def collatzLengthRecursive
-collatzLengthRecursive = {number->
-    def value = (int) number
-    if(answermap.containsKey(value)) {
-        return answermap.get(value)
+def collatzLength(int number) {
+    if(answermap.containsKey(number)) {
+        return answermap.get(number)
     }
-    else {
-        if(value == 1) {
-            return 1
-        }
-        else if(value%2==0) {
-            def length = collatzLengthRecursive.trampoline(value/2) + 1
-            answermap.put(value, length)
-            return length
+    def sequence = new ArrayList()
+    def length = 0
+    long current = number
+    while(!answermap.containsKey(current)) {
+        sequence.add(current)
+        length++
+        if(current == 1) break;
+        if((current&1)==0) {
+            current = current / 2
         }
         else {
-            def length = collatzLengthRecursive.trampoline(3*value + 1) + 1
-            answermap.put(value, length)
-            return length
+            current = 3 * current + 1
         }
     }
-}.trampoline()
+    if(answermap.containsKey(current)) {
+        length += answermap.get(current)
+    }
+    valueLength = length
+    sequence.each { it ->
+        answermap.put it, valueLength
+        valueLength = valueLength - 1
+    }
+    return length
+}
+
+def collatzLengthNonMemoized(val) {
+    def length=0
+    long number = val
+    while(number != 1) {
+        length++
+        if((number&1)==0) {
+            number = number/2
+        }
+        else number = 3*number + 1
+    }
+    return length
+}
 
 def longestChain = 0
 def longestValue
-for(def it = 1; it <= 1000000; it++) {
-    println it
-    def length = collatzLengthRecursive it
+for(def it = 3; it <= 1000000; it = it + 2) {
+    def length = collatzLengthNonMemoized(it)
     if (length > longestChain) {
         longestValue = it
         longestChain = length
-        println "longest value=$longestValue, longest chain=$longestChain"
+        println "Longest Value: $longestValue"
     }
 }
 
