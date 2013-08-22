@@ -19,7 +19,6 @@ BigInteger[][] grid = new BigInteger[21][21]
         def val1 = grid[a-1][b]
         def val2 = grid[a][b-1]
         println "$a, $b"
-        grid[a][b] =  val1 + val2
     }
 }
 
